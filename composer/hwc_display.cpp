@@ -497,6 +497,7 @@ int HWCDisplay::Init() {
 
   validated_ = false;
   HWCDebugHandler::Get()->GetProperty(DISABLE_HDR, &disable_hdr_handling_);
+  HWCDebugHandler::Get()->GetProperty(FORCE_GPU_ROTATION_PROP, &force_gpu_rotation_);
   if (disable_hdr_handling_) {
     DLOGI("HDR Handling disabled");
   }
@@ -706,6 +707,10 @@ void HWCDisplay::BuildLayerStack() {
 #endif
 
     if (!hwc_layer->IsDataSpaceSupported()) {
+      layer->flags.skip = true;
+    }
+
+    if (!layer->flags.skip && force_gpu_rotation_ && layer->transform.rotation != 0.0f) {
       layer->flags.skip = true;
     }
 

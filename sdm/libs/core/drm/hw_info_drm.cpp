@@ -646,6 +646,14 @@ DisplayError HWInfoDRM::GetRotatorSupportedFormats(uint32_t v4l2_index,
 }
 
 DisplayError HWInfoDRM::GetHWRotatorInfo(HWResourceInfo *hw_resource) {
+  int disable_rotator = 0;
+  Debug::Get()->GetProperty(DISABLE_OFFLINE_ROTATOR_PROP, &disable_rotator);
+  if (disable_rotator) {
+    DLOGI("Offline V4L2 rotator disabled by property; layers needing rotation "
+          "will use GPU composition.");
+    return kErrorNone;
+  }
+
   string v4l2_path = "/sys/class/video4linux/video";
   const uint32_t kMaxV4L2Nodes = 64;
 
